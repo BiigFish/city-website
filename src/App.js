@@ -1,7 +1,7 @@
 import React, { Component} from "react";
 import "./App.css";
 import CanvasMenu from './components/canvas';
-
+import Menu from './components/menu';
 
 class App extends Component{
   render(){
@@ -10,8 +10,7 @@ class App extends Component{
         <div className="canvas-container">
           <CanvasMenu />
         </div>
-        <h1> Hello, World! </h1>
-        
+        <Menu />
 
       </div>
     );

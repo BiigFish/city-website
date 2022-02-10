@@ -1,0 +1,8 @@
+.text-container {
+    background-color: rgba(255, 239, 215, 0.932);
+    max-width: 720px;
+    margin: auto;
+    padding: 10px;
+    font-size: 16pt;
+    font-family: sans-serif;
+}

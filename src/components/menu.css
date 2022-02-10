@@ -1,0 +1,20 @@
+.triangle {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 300px 200px 0 0;
+    border-color: #ff0000 transparent transparent transparent;
+    position: fixed;
+    top:0;
+    z-index: -1;
+}
+.text {
+    color: white;
+    margin-left: 10px;
+    margin-top: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+h1, h2 {
+    margin: 0;
+    margin-bottom: 5px;
+}
