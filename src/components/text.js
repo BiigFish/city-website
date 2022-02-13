@@ -1,20 +1,39 @@
 import "./text.css";
 import ReactMarkdown from 'react-markdown';
+import React from "react";
 
-const markdown = `this is a test
+class Text extends React.Component {
+    render() {
 
-## and there is more
-oh sshit
+        const showAbout = this.props.showAbout;
+        const showStory = this.props.showStory;
 
-semi shit
-`
-
-const Text = () => {
-    return (
-        <div className='text-container'>
-                <ReactMarkdown children={markdown} />
-        </div>
-    );
+        const about = `# About
+        Random text oh yeah
+        ## yes indeed
+        `
+        const story = `# Story
+        This is the story section
+        `
+        
+        if (showAbout) {
+            return (
+                <div className='text-container'>
+                        <ReactMarkdown children={about} />
+                </div>
+            );
+        }
+        else if (showStory) {
+            return (
+                <div className='text-container'>
+                        <ReactMarkdown children={story} />
+                </div>
+            );
+        }
+        else {
+            return (null);
+        }
+}
 };
 
 export default Text;

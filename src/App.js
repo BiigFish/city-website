@@ -1,16 +1,29 @@
 import React, { Component} from "react";
 import "./App.css";
-import CanvasMenu from './components/canvas';
+import Canvas from './components/canvas';
 import Menu from './components/menu';
+import TextBox from './components/text'
 
 class App extends Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      showAbout: true,
+      showStory: true
+    };
+  }
   render(){
     return(
-      <div className="App">
-        <div className="canvas-container">
-          <CanvasMenu />
-        </div>
-        <Menu />
+      <div>
+        <Canvas />
+        <Menu
+          showAbout={this.state.showAbout}
+          showStory={this.state.showStory}
+        />
+        <TextBox
+          showAbout={this.state.showAbout}
+          showStory={this.state.showStory}
+        />
 
       </div>
     );

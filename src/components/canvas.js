@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import "./canvas.css";
 
 const CanvasMenu = () => {
   let ref = useRef();
@@ -272,7 +273,7 @@ const CanvasMenu = () => {
   });
 
   return (
-    <div>
+    <div className="canvas-container">
       <canvas ref={ref}></canvas>
     </div>
   );
