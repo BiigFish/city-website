@@ -8,6 +8,13 @@ const CanvasMenu = () => {
     let canvas = ref.current;
     let context = canvas.getContext('2d');
 
+        let mouseX = 0;
+        let mouseY = 0;
+    canvas.addEventListener('mousemove', (event) => {
+        mouseX = event.offsetX;
+        mouseY = event.offsetY;
+    });
+
     window.addEventListener('resize', () => {
         fitToContainer();
         main();
@@ -15,7 +22,6 @@ const CanvasMenu = () => {
 
     fitToContainer(canvas);
 
-   
 
     
     class Vector {
@@ -132,6 +138,15 @@ const CanvasMenu = () => {
         get returnStart() {
             return this.startBuilding.x;
         }
+        update(mouseX, mouseY) {
+            if (context.isPointInPath(mouseX, mouseY)) {
+                context.fillStyle = 'blue';
+                console.log('piss');
+            }
+            else {
+                context.fillStyle = this.color;
+            }
+        }
         draw(context) {
             context.fillStyle = this.color;
             context.strokeStyle = this.colorStroke;
@@ -140,10 +155,7 @@ const CanvasMenu = () => {
     
             context.beginPath();
             context.rect(this.pointTF.x, this.pointTF.y, this.width, this.height);
-            context.fill();
-            context.stroke();
-    
-            context.beginPath();
+
             context.moveTo(this.pointBC.x, this.pointBC.y);
             context.lineTo(this.startBuilding.x,this.startBuilding.y);
             context.lineTo(this.topPointClose.x, this.topPointClose.y);
@@ -219,6 +231,7 @@ const CanvasMenu = () => {
                         
                         let startMargin = getRndInteger(margin, width - buildingWidth);
                         const building1 = new Building(startx,row.y,slope, i, buildingWidth, height, depth, startMargin);
+                        building1.update(mouseX, mouseY);
                         building1.draw(context);
                         if (startMargin > 40) {building1.drawGrass(context)}
                         gapList.push(building1.gap);

@@ -2,11 +2,10 @@ import "./text.css";
 import ReactMarkdown from 'react-markdown';
 import React from "react";
 
-class Text extends React.Component {
-    render() {
+const Text = props => {
+    const display = props.display
 
-        const showAbout = this.props.showAbout;
-        const showStory = this.props.showStory;
+
 
         const about = `# About
         Random text oh yeah
@@ -16,14 +15,14 @@ class Text extends React.Component {
         This is the story section
         `
         
-        if (showAbout) {
+        if (display === 1) {
             return (
                 <div className='text-container'>
                         <ReactMarkdown children={about} />
                 </div>
             );
         }
-        else if (showStory) {
+        else if (display === 2) {
             return (
                 <div className='text-container'>
                         <ReactMarkdown children={story} />
@@ -33,7 +32,7 @@ class Text extends React.Component {
         else {
             return (null);
         }
-}
+
 };
 
 export default Text;

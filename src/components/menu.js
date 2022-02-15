@@ -2,21 +2,8 @@ import React from "react";
 import "./menu.css";
 
 
-class Menu extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleShowAboutChange = this.handleShowAboutChange.bind(this);
-    }
-    handleShowAboutChange(e) {
-        this.props.onShowAboutChange(e.target.value);
-    }
+const Menu = ({ onClickAbout, changeAbout, onClickStory, changeStory}) => {
 
-    render() {
-    const showAbout = this.props.showAbout;
-
-function button() {
-    showAbout = true;
-}
 
 return (
     
@@ -24,12 +11,12 @@ return (
         <div className='triangle'></div>
         <div className='text'>
             <button onClick={() => window.location.reload(false)}><h1>My City</h1></button>
-            <button onClick={() => button()}><h2>About</h2></button>
-            <h2>Story</h2>
+            <button onClick={onClickAbout}><h2>About</h2>{changeAbout}</button>
+            <button onClick={onClickStory}><h2>Story</h2>{changeStory}</button>
         </div>
     </div>
 );
-}
+
 };
 
 export default Menu;
