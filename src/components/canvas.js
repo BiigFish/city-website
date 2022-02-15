@@ -68,11 +68,10 @@ const CanvasMenu = () => {
         }
         }
         class RoadPerpendicular {
-        constructor(x, y, length, slope, loop) {
-            this.width = getRndInteger(2,10);
+        constructor(x, y, width, length, slope, loop) {
+            this.width = width;
             this.length = length;
             this.margin = 10;
-            this.emptyLot = getRndInteger(0,5);
     
             this.pointRP = new Depth(x,y,loop,slope);
             this.pointRP.x += this.margin;
@@ -80,9 +79,6 @@ const CanvasMenu = () => {
             this.pointRPTF = new Vector(this.pointRP.x - this.length, this.pointRP.y);
             this.pointRPBC = new Depth(this.pointRP.x, this.pointRP.y, this.width, slope);
             this.pointRPBF = new Vector(this.pointRPBC.x - this.length, this.pointRPBC.y);
-        }
-        get gap() {
-            return this.width + this.emptyLot;
         }
         draw(context){
             context.beginPath();
@@ -103,7 +99,6 @@ const CanvasMenu = () => {
             this.startMargin = startMargin;
             this.height = height;
             this.depth = depth;
-            this.emptyLot = getRndInteger(0,5);
             this.color = 'white';
             this.colorStroke = 'black';
     
@@ -128,12 +123,6 @@ const CanvasMenu = () => {
             this.numWindows = (this.width - (this.windowClearance * 2)) / (this.window + this.windowClearance);
             this.centerQuantity = (this.width - (this.numWindows * 15)+5) / 2;
             
-        }
-        get gap() {
-            return this.depth + this.emptyLot;
-        }
-        get returnWidth() {
-            return this.width;
         }
         get returnStart() {
             return this.startBuilding.x;
@@ -192,7 +181,9 @@ const CanvasMenu = () => {
         }
         }
     
-    
+        const buildings = [];
+        const roadsVertical = [];
+        const roadsHorizontal = [];
     
         main();
         function main() {
@@ -201,50 +192,50 @@ const CanvasMenu = () => {
         const slope = -1;//(origin.y - vPoint.y) / (origin.x - vPoint.x);
     
         let rowLength = getRndInteger(100,300); //190;
-        let prev = 'none';
-        for (let j = 0; j < canvas.width*2 + rowLength; j += rowLength ){
+        let prev = 'none'; //this ensures there isn't two horizontal roads in a row
+        for (let j = 0; j < canvas.width*2 + rowLength; j += rowLength ){ //loop for each horizontal row
             let row = {x: 100 + j, y: 0};
     
-            for (let i = 0; i < Math.hypot(canvas.width, canvas.height)+100; i += 5){
+            for (let i = 0; i < Math.hypot(canvas.width, canvas.height)+100; i += 5){ //loop for each vertical row
                 let type = getRndInteger(1,100);
     
-                if (type > 80 && prev !== 'road') {
-                    const roadPerpendicular1 = new RoadPerpendicular(row.x, row.y, rowLength, slope, i);
+                if (type > 80 && prev !== 'road') { //road
+                    let width = getRndInteger(2,10);
+                    let emptyLot = getRndInteger(0,5);
+                    const roadPerpendicular1 = new RoadPerpendicular(row.x, row.y, width, rowLength, slope, i);
                     roadPerpendicular1.draw(context);
-                    i += roadPerpendicular1.gap;
+                    i += width + emptyLot;
                     prev = 'road';
                 }
-                else {
+                else { //building
                     let quantity = getRndInteger(1,5);
                     let rowLengthAndRoad = rowLength -20; //because 10 each for margin on both sides
                     let width = rowLengthAndRoad / quantity;
                     let gapList = [];
-                    let returnedWidth = [];
                 
-                    for (let k = quantity - 1; k >= 0; k--) {
+                    for (let k = quantity - 1; k >= 0; k--) { //buildings in horizontal row
                         let startx = row.x - (width * k);
                         let margin = 10;
                         let buildingWidth = getRndInteger(margin + 5, width) - margin;
                         let height = getRndInteger(10, 50);
                         if (getRndInteger(1,11) > 9){height = getRndInteger(100,200)} //towers
                         let depth = getRndInteger(5,30);
+                        let emptyLot = getRndInteger(0, 5);
                         
                         let startMargin = getRndInteger(margin, width - buildingWidth);
                         const building1 = new Building(startx,row.y,slope, i, buildingWidth, height, depth, startMargin);
                         building1.update(mouseX, mouseY);
                         building1.draw(context);
-                        if (startMargin > 40) {building1.drawGrass(context)}
-                        gapList.push(building1.gap);
-                        returnedWidth.push(building1.returnWidth);
+                        if (startMargin > 40) {building1.drawGrass(context)} //grass
+                        gapList.push(depth + emptyLot);
                         
-                        if(returnedWidth > 40 && depth > 20) {
-                        //levels
+                        if(buildingWidth > 40 && depth > 20) { //levels
                         let levelMargin = 2;
-                        let levelWidth = getRndInteger(10, returnedWidth - (levelMargin * 2)) ;
+                        let levelWidth = getRndInteger(10, buildingWidth - (levelMargin * 2)) ;
                         let posLevel= {x: startx - 2, y: row.y + 2 - height};
                         let posHeight = getRndInteger(1, 20);
-                        let posDepth = getRndInteger(3, depth - 5)
-                        let levelStartMargin = getRndInteger(startMargin, returnedWidth - levelWidth);
+                        let posDepth = getRndInteger(3, depth - 5);
+                        let levelStartMargin = getRndInteger(startMargin, buildingWidth - levelWidth);
                         const level = new Building(posLevel.x, posLevel.y, slope, i, levelWidth, posHeight, posDepth, levelStartMargin);
                         level.draw(context);
                         }
@@ -255,7 +246,7 @@ const CanvasMenu = () => {
                     }
                     
             }
-            const road1 = new Road(row.x, row.y, 10, slope);
+            const road1 = new Road(row.x, row.y, 10, slope); //vertical road
             road1.draw(context);
             rowLength = getRndInteger(100,300);
         }
