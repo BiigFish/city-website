@@ -14,6 +14,9 @@ const CanvasMenu = () => {
         mouseX = event.offsetX;
         mouseY = event.offsetY;
     });
+    canvas.addEventListener('click', (event) => {
+        requestAnimationFrame(main);
+    });
 
     window.addEventListener('resize', () => {
         fitToContainer();
@@ -23,7 +26,6 @@ const CanvasMenu = () => {
     fitToContainer(canvas);
 
 
-    
     class Vector {
         constructor(x, y) {
             this.x = x;
@@ -31,9 +33,9 @@ const CanvasMenu = () => {
         }
         }
         class Depth {
-        constructor(x,y,d,m) {
-            this.x = -1 *(d / (Math.sqrt(1+(m * m)))) + x;
-            this.y = -1 * ((d * m) / (Math.sqrt(1+(m * m)))) + y;
+        constructor(x,y,d,slope) {
+            this.x = -1 *(d / (Math.sqrt(1+(slope * slope)))) + x;
+            this.y = -1 * ((d * slope) / (Math.sqrt(1+(slope * slope)))) + y;
         }
         }
         class VPX {
@@ -50,7 +52,6 @@ const CanvasMenu = () => {
             this.y = (slope * x1) + b;
         }
         }
-    
         class Road {
         constructor(x,y,width,slope) {
             this.point1 = new Vector(x,y);
@@ -68,12 +69,12 @@ const CanvasMenu = () => {
         }
         }
         class RoadPerpendicular {
-        constructor(x, y, width, length, slope, loop) {
+        constructor(start, width, length, slope, loop) {
             this.width = width;
             this.length = length;
             this.margin = 10;
     
-            this.pointRP = new Depth(x,y,loop,slope);
+            this.pointRP = new Depth(start.x, start.y,loop,slope);
             this.pointRP.x += this.margin;
     
             this.pointRPTF = new Vector(this.pointRP.x - this.length, this.pointRP.y);
@@ -91,8 +92,6 @@ const CanvasMenu = () => {
         }
         }
     
-    
-    
         class Building {
         constructor(x,y, slope, loop, width, height, depth, startMargin) {
             this.width = width;
@@ -103,14 +102,28 @@ const CanvasMenu = () => {
             this.colorStroke = 'black';
     
             this.start = new Depth(x,y,loop,slope);
-            this.startBuilding = new Vector(this.start.x - this.startMargin, this.start.y);
+            this.pointG = new Vector(this.start.x - this.startMargin, this.start.y);
     
-            this.pointBC = new Depth(this.startBuilding.x, this.startBuilding.y, this.depth, slope);
-            this.pointTC = new Vector(this.pointBC.x, this.pointBC.y - this.height);
-            this.pointTF = new Vector(this.pointBC.x - this.width, this.pointTC.y);
+            this.pointD = new Depth(this.pointG.x, this.pointG.y, this.depth, slope);
+            this.pointB = new Vector(this.pointD.x, this.pointD.y - this.height);
+            this.pointA = new Vector(this.pointD.x - this.width, this.pointB.y);
     
-            this.topPointClose = new VPY(this.pointTC.x, this.pointTC.y, slope, this.startBuilding.x);
-            this.topPointFar = new VPX(this.pointTF.x, this.pointTF.y, slope, this.topPointClose.y);
+            this.pointF = new VPY(this.pointB.x, this.pointB.y, slope, this.pointG.x);
+            this.pointE = new VPX(this.pointA.x, this.pointA.y, slope, this.pointF.y);
+            this.path = 'path';
+
+            //Level
+            this.levelMargin = 2;
+            this.levelWidth = getRndInteger(10, this.width - (this.levelMargin * 2));
+            this.levelDepth = getRndInteger(3, this.depth - (this.levelMargin * 2));
+            this.levelHeight = getRndInteger(1, 20);
+            this.levelStartMargin = new Vector(getRndInteger(this.levelMargin, this.width - this.levelWidth), getRndInteger(this.levelMargin, this.depth - this.levelDepth));
+            this.levelPointG = new Depth(this.pointF.x - this.levelStartMargin.x, this.pointF.y, this.levelStartMargin.y, slope);
+            this.levelPointD = new Depth(this.levelPointG.x, this.levelPointG.y, this.levelDepth, slope)
+            this.levelPointB = new Vector(this.levelPointD.x, this.levelPointD.y - this.levelHeight);
+            this.levelPointA = new Vector(this.levelPointD.x - this.levelWidth, this.levelPointB.y);
+            this.levelPointF = new VPY(this.levelPointB.x, this.levelPointB.y, slope, this.levelPointG.x);
+            this.levelPointE = new VPX(this.levelPointA.x, this.levelPointA.y, slope, this.levelPointF.y);
     
             //Grass
             this.grass = new Vector(this.start.x - 10,this.start.y);
@@ -125,38 +138,34 @@ const CanvasMenu = () => {
             
         }
         get returnStart() {
-            return this.startBuilding.x;
+            return this.pointG.x;
         }
-        update(mouseX, mouseY) {
-            if (context.isPointInPath(mouseX, mouseY)) {
-                context.fillStyle = 'blue';
-                console.log('piss');
+        
+        draw(context) {
+            context.strokeStyle = this.colorStroke;
+            //if (getRndInteger(1,1000) > 998) {context.fillStyle = 'orange'}
+            drawCube(context, this.pointA, this.width, this.height, this.pointB, this.pointD, this.pointE, this.pointF, this.pointG);
+        }
+        update(mouseX, mouseY, go) {
+            if ((this.pointA.x < mouseX && mouseX < this.pointB.x) && (this.pointA.y < mouseY && mouseY < this.pointD.y) && go) {
+                return false;
+            }
+            else if (go) {
+                return true;
             }
             else {
-                context.fillStyle = this.color;
             }
         }
-        draw(context) {
+        style(context) {
+            context.fillStyle = this.color;
+        }
+        changeColor(context) {
+            context.fillStyle = 'red';
+        }
+        drawLevel(context) {
             context.fillStyle = this.color;
             context.strokeStyle = this.colorStroke;
-            if (getRndInteger(1,1000) > 998) {context.fillStyle = 'orange'}
-    
-    
-            context.beginPath();
-            context.rect(this.pointTF.x, this.pointTF.y, this.width, this.height);
-
-            context.moveTo(this.pointBC.x, this.pointBC.y);
-            context.lineTo(this.startBuilding.x,this.startBuilding.y);
-            context.lineTo(this.topPointClose.x, this.topPointClose.y);
-            context.lineTo(this.pointTC.x, this.pointTC.y);
-            context.lineTo(this.pointTF.x, this.pointTF.y);
-            context.lineTo(this.topPointFar.x, this.topPointFar.y);
-            context.lineTo(this.topPointClose.x, this.topPointClose.y);
-            context.lineTo(this.pointTC.x, this.pointTC.y);
-            context.lineTo(this.pointBC.x, this.pointBC.y);
-            context.lineTo(this.startBuilding.x, this.startBuilding.y);
-            context.fill();
-            context.stroke();
+            drawCube(context, this.levelPointA, this.levelWidth, this.levelHeight, this.levelPointB, this.levelPointD, this.levelPointE, this.levelPointF, this.levelPointG);
         }
         drawWindow(context) {
             for(let j = this.pointTF.y + this.windowClearance; j < this.pointBC.y - this.window; j += this.window + this.windowClearance) {
@@ -186,7 +195,7 @@ const CanvasMenu = () => {
         const roadsHorizontal = [];
     
         main();
-        function main() {
+        
         //const vPoint = {x:canvas.width, y:0};
         //const origin = {x:0, y:canvas.height};
         const slope = -1;//(origin.y - vPoint.y) / (origin.x - vPoint.x);
@@ -202,8 +211,7 @@ const CanvasMenu = () => {
                 if (type > 80 && prev !== 'road') { //road
                     let width = getRndInteger(2,10);
                     let emptyLot = getRndInteger(0,5);
-                    const roadPerpendicular1 = new RoadPerpendicular(row.x, row.y, width, rowLength, slope, i);
-                    roadPerpendicular1.draw(context);
+                    roadsHorizontal.push(new RoadPerpendicular(row, width, rowLength, slope, i));
                     i += width + emptyLot;
                     prev = 'road';
                 }
@@ -223,22 +231,9 @@ const CanvasMenu = () => {
                         let emptyLot = getRndInteger(0, 5);
                         
                         let startMargin = getRndInteger(margin, width - buildingWidth);
-                        const building1 = new Building(startx,row.y,slope, i, buildingWidth, height, depth, startMargin);
-                        building1.update(mouseX, mouseY);
-                        building1.draw(context);
-                        if (startMargin > 40) {building1.drawGrass(context)} //grass
-                        gapList.push(depth + emptyLot);
+                        buildings.push(new Building(startx,row.y,slope, i, buildingWidth, height, depth, startMargin));
                         
-                        if(buildingWidth > 40 && depth > 20) { //levels
-                        let levelMargin = 2;
-                        let levelWidth = getRndInteger(10, buildingWidth - (levelMargin * 2)) ;
-                        let posLevel= {x: startx - 2, y: row.y + 2 - height};
-                        let posHeight = getRndInteger(1, 20);
-                        let posDepth = getRndInteger(3, depth - 5);
-                        let levelStartMargin = getRndInteger(startMargin, buildingWidth - levelWidth);
-                        const level = new Building(posLevel.x, posLevel.y, slope, i, levelWidth, posHeight, posDepth, levelStartMargin);
-                        level.draw(context);
-                        }
+                        gapList.push(depth + emptyLot);
                     }
                     i += Math.max(...gapList);
                     //building1.drawWindow(context);
@@ -246,14 +241,43 @@ const CanvasMenu = () => {
                     }
                     
             }
-            const road1 = new Road(row.x, row.y, 10, slope); //vertical road
-            road1.draw(context);
+            roadsVertical.push(new Road(row.x, row.y, 10, slope)); //vertical road
             rowLength = getRndInteger(100,300);
         }
-    
-    
+        function main() {
+
+            roadsHorizontal.forEach((roadPerpendicular) => {
+                roadPerpendicular.draw(context);
+            });
+            roadsVertical.forEach((road) => {
+                road.draw(context);
+            });
+            let go = true;
+            let counter = 0;
+            let moment = null;
+            buildings.forEach((building) => {
+                counter++;
+                go = (building.update(mouseX, mouseY, context, go));
+                if (go === false) {
+                    moment = counter;
+                }
+            });
+            counter = 0;
+            buildings.forEach((building) => {
+                counter++;
+                building.style(context);
+                if (counter === moment) {
+                    building.changeColor(context);
+                }
+                building.draw(context, mouseX, mouseY);
+                if (building.startMargin > 40) {
+                    building.drawGrass(context);
+                }
+                if (building.width > 40 && building.depth > 20) {
+                    building.drawLevel(context);
+                }
+            });
         }
-    
 
     //makese screen size dynamic
     function fitToContainer() {
@@ -269,11 +293,27 @@ const CanvasMenu = () => {
         const item = arr[randomIndex];
         return item;
         }
-        
-        function getRndInteger(min, max) {
-            if (min > max){return min}
-            else {return Math.floor(Math.random() * (max - min) ) + min;}
-            }
+    function getRndInteger(min, max) {
+        if (min > max){return min}
+        else {return Math.floor(Math.random() * (max - min) ) + min;}
+        }
+    function drawCube(context, A, width, height, B, D, E, F, G) {
+        context.beginPath();
+        context.rect(A.x, A.y, width, height);
+
+        context.moveTo(D.x, D.y);
+        context.lineTo(G.x,G.y);
+        context.lineTo(F.x, F.y);
+        context.lineTo(B.x, B.y);
+        context.lineTo(A.x, A.y);
+        context.lineTo(E.x, E.y);
+        context.lineTo(F.x, F.y);
+        context.lineTo(B.x, B.y);
+        context.lineTo(D.x, D.y);
+        context.lineTo(G.x, G.y);
+        context.fill();
+        context.stroke();
+    }
   });
 
   return (
