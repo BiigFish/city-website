@@ -1,8 +1,17 @@
 .text-container {
     background-color: rgba(255, 239, 215, 0.932);
-    max-width: 720px;
-    margin: auto;
+    width: 100%;
     padding: 10px;
     font-size: 16pt;
     font-family: sans-serif;
+    margin-top: 250px;
+    position: absolute;
 }
+@media only screen and (min-width: 720px) {
+    .text-container {
+        width: 720px;
+        left: 50%;
+        margin-left: -360px;
+        right: auto;
+    }
+  }

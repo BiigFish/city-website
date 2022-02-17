@@ -25,7 +25,6 @@ const CanvasMenu = () => {
 
     fitToContainer(canvas);
 
-
     class Vector {
         constructor(x, y) {
             this.x = x;
@@ -147,7 +146,7 @@ const CanvasMenu = () => {
             drawCube(context, this.pointA, this.width, this.height, this.pointB, this.pointD, this.pointE, this.pointF, this.pointG);
         }
         update(mouseX, mouseY, go) {
-            if ((this.pointA.x < mouseX && mouseX < this.pointB.x) && (this.pointA.y < mouseY && mouseY < this.pointD.y) && go) {
+            if ((this.pointA.x < mouseX && mouseX < this.pointF.x) && (this.pointE.y < mouseY && mouseY < this.pointD.y) && go) {
                 return false;
             }
             else if (go) {
@@ -163,7 +162,6 @@ const CanvasMenu = () => {
             context.fillStyle = 'red';
         }
         drawLevel(context) {
-            context.fillStyle = this.color;
             context.strokeStyle = this.colorStroke;
             drawCube(context, this.levelPointA, this.levelWidth, this.levelHeight, this.levelPointB, this.levelPointD, this.levelPointE, this.levelPointF, this.levelPointG);
         }
@@ -187,6 +185,7 @@ const CanvasMenu = () => {
                 context.lineTo(this.grass.x, this.grass.y);
                 context.fillStyle = 'green';
                 context.fill();
+                context.fillStyle = this.color
         }
         }
     
@@ -194,7 +193,6 @@ const CanvasMenu = () => {
         const roadsVertical = [];
         const roadsHorizontal = [];
     
-        main();
         
         //const vPoint = {x:canvas.width, y:0};
         //const origin = {x:0, y:canvas.height};
@@ -244,6 +242,8 @@ const CanvasMenu = () => {
             roadsVertical.push(new Road(row.x, row.y, 10, slope)); //vertical road
             rowLength = getRndInteger(100,300);
         }
+        main();
+
         function main() {
 
             roadsHorizontal.forEach((roadPerpendicular) => {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Menu from './menu';
 import TextBox from './text'
+import Info from './info'
 
 function Overlay(){
     const [show, setShow] = useState(0);
@@ -25,6 +26,7 @@ function Overlay(){
           onClickAbout={changeAbout}
           onClickStory={changeStory}
         />
+        <Info />
         <TextBox display={show}
         />
 

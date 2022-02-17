@@ -1,0 +1,20 @@
+.infoStyle {
+        background-color: rgb(48, 130, 211);
+        color: white;
+        margin: auto;
+        position: fixed;
+        right: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        padding: 5px;
+        top: 0;
+
+}
+@media only screen and (min-width: 570px) {
+    .infoStyle {
+        left: 50%;
+        margin-left: -87.5px;
+        right: auto;
+    }
+  }
