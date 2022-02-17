@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.3f720b42.css",
-    "main.js": "/static/js/main.8250b1e6.js",
-    "index.html": "/index.html",
-    "main.3f720b42.css.map": "/static/css/main.3f720b42.css.map",
-    "main.8250b1e6.js.map": "/static/js/main.8250b1e6.js.map"
+    "main.css": "/city-website/static/css/main.3f720b42.css",
+    "main.js": "/city-website/static/js/main.8250b1e6.js",
+    "index.html": "/city-website/index.html",
+    "main.3f720b42.css.map": "/city-website/static/css/main.3f720b42.css.map",
+    "main.8250b1e6.js.map": "/city-website/static/js/main.8250b1e6.js.map"
   },
   "entrypoints": [
     "static/css/main.3f720b42.css",
